@@ -392,22 +392,6 @@ We track quantifiable improvements across multiple dimensions:
 | **Content Reusability** | 23% | 67% | +191.3% |
 | **API Cost per Student** | $0.42 | $0.28 | -33.3% |
 
-### Key Improvement Example
-
-**Case Study: Python Programming Topic**
-
-- **Week 1 (No Adaptation)**:
-  - Average lesson score: 65/100
-  - Student completion: 58%
-  - Questions per lesson: 1.8
-  
-- **Week 4 (With Full Adaptation)**:
-  - Average lesson score: 86/100 (+32.3%)
-  - Student completion: 87% (+50%)
-  - Questions per lesson: 4.2 (+133%)
-  
-- **Mechanism**: System detected that students struggled with abstract concepts. Adaptation generated more code examples, created explanatory videos for visual learners, and adjusted difficulty curve based on conversation patterns.
-
 ---
 
 ## 🚀 Installation & Setup
