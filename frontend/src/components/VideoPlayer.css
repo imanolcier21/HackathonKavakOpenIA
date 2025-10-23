@@ -1,0 +1,224 @@
+.video-player-container {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.educational-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 500px;
+}
+
+.video-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.video-title {
+  margin: 0;
+  color: #333;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.video-duration {
+  color: #667eea;
+  font-weight: 500;
+  padding: 5px 12px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.video-controls-section {
+  margin: 15px 0;
+}
+
+.transcript-toggle {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.transcript-toggle:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+}
+
+.transcript-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 15px 0;
+  border-left: 4px solid #667eea;
+}
+
+.narration-text {
+  color: #555;
+  line-height: 1.8;
+  font-size: 15px;
+  margin: 0;
+}
+
+.key-takeaways {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+.key-takeaways h4 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+}
+
+.key-takeaways ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.key-takeaways li {
+  padding: 8px 0 8px 25px;
+  position: relative;
+  line-height: 1.6;
+}
+
+.key-takeaways li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.video-prompt-details {
+  margin-top: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+}
+
+.video-prompt-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #667eea;
+  user-select: none;
+  padding: 5px;
+}
+
+.video-prompt-details summary:hover {
+  color: #5568d3;
+}
+
+.sora-prompt {
+  margin-top: 10px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  color: #555;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Fallback styles */
+.video-fallback {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  margin: 15px 0;
+}
+
+.fallback-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.fallback-message {
+  color: #2d3436;
+  margin: 15px 0;
+  font-size: 16px;
+}
+
+.fallback-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: left;
+  margin-top: 20px;
+}
+
+.fallback-content p {
+  margin: 10px 0;
+  color: #555;
+}
+
+.narration-box {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  margin: 15px 0;
+  border-left: 4px solid #667eea;
+}
+
+.fallback-content .takeaways {
+  margin-top: 15px;
+}
+
+.fallback-content .takeaways ul {
+  padding-left: 25px;
+  color: #555;
+}
+
+.fallback-content .takeaways li {
+  margin: 8px 0;
+}
+
+.video-error {
+  background: #ff7675;
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  margin: 15px 0;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .video-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .video-duration {
+    align-self: flex-start;
+  }
+}
