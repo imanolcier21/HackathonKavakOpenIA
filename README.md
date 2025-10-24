@@ -376,7 +376,7 @@ We track quantifiable improvements across multiple dimensions:
 - **Node.js** 18.x or higher
 - **PostgreSQL** 12.x or higher
 - **npm** or **yarn**
-- **OpenAI API Key** (with access to GPT-4o, GPT-5, and Sora 2)
+- **OpenAI API Key** (with access to GPT-5, and Sora 2)
 
 ### 1. Clone the Repository
 
@@ -419,7 +419,7 @@ FRONTEND_URL=http://localhost:5173
 OPENAI_API_KEY=sk-your-openai-api-key-here
 
 # Agent System Configuration (Optional)
-AGENT_MODEL=gpt-4o-mini
+AGENT_MODEL=gpt-5
 AGENT_TEMPERATURE=0.7
 AGENT_MAX_TOKENS=2000
 ```
@@ -699,8 +699,7 @@ See [API_EXAMPLES.md](backend/API_EXAMPLES.md) for complete documentation.
 ### AI & Agents
 - **LangChain** - Agent orchestration framework
 - **@langchain/openai** - OpenAI integration
-- **OpenAI GPT-4o** - Primary reasoning model
-- **OpenAI GPT-5** - Advanced evaluation (with reasoning effort)
+- **OpenAI GPT-5** - Advanced evaluation with reasoning
 - **OpenAI Sora 2** - Video generation
 - **UUID** - Unique identifiers
 
