@@ -893,52 +893,13 @@ HackathonKavakOpenIA/
 
 ---
 
-## 🔮 Future Enhancements
-
-### Planned Features
-
-1. **Speech Recognition & TTS**
-   - Voice-based interactions for accessibility
-   - Audio lesson narration
-
-2. **Peer Learning**
-   - Match students with similar interests
-   - Collaborative problem-solving sessions
-
-3. **Gamification**
-   - XP points and achievements
-   - Leaderboards and challenges
-
-4. **Mobile App**
-   - React Native iOS/Android apps
-   - Offline lesson caching
-
-5. **Advanced Analytics**
-   - Predictive learning outcome modeling
-   - Dropout risk identification
-   - Optimal study time recommendations
-
-6. **Content Marketplace**
-   - Educators can share AI-generated curricula
-   - Community ratings and reviews
-
-7. **Integration with External Resources**
-   - Automatically suggest YouTube videos, articles
-   - Pull exercises from coding platforms (LeetCode, HackerRank)
-
-8. **Multi-Language Support**
-   - Automatic translation of lessons
-   - Native language learning paths
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
 
 ## 👥 Team
+
+IMPROVERS
+  Mauricio Imanol Ramirez Paulin
+  Marco Antonio Chávez Rodriguez
+  Rogelio Leonardo Elizalde Diaz
 
 Developed for **Kavak Open AI Hackathon 2025**
 
@@ -951,23 +912,6 @@ Developed for **Kavak Open AI Hackathon 2025**
 - **OpenAI** for GPT-4o, GPT-5, and Sora 2 API access
 - **LangChain** for the agent orchestration framework
 - **PostgreSQL** for robust data persistence
-- **Kavak** for hosting the hackathon and inspiring innovation in AI education
 
 ---
 
-## 📞 Support
-
-For questions, issues, or contributions:
-
-- **Issues**: [GitHub Issues](https://github.com/imanolcier21/HackathonKavakOpenIA/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/imanolcier21/HackathonKavakOpenIA/discussions)
-
----
-
-<div align="center">
-
-**Built with ❤️ using AI-powered adaptive learning**
-
-[⬆ Back to Top](#adaptive-multimodal-learning-platform)
-
-</div>
