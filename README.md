@@ -153,12 +153,12 @@ Our platform implements a **multi-agent system** where specialized AI models col
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
-                      ┌────────────────────────────┐
-                      │  OpenAI API Integration    │
-                      │  - GPT-4o for reasoning    │
-                      │  - GPT-5 for evaluation    │
-                      │  - Sora 2 for videos       │
-                      └────────────────────────────┘
+                      ┌─────────────────────────────────────────┐
+                      │  OpenAI API Integration                 │
+                      │                                         │
+                      │  - GPT-5 for traingin and evaluation    │
+                      │  - Sora 2 for videos                    │
+                      └─────────────────────────────────────────┘
 ```
 
 ### Agent Communication Flow
@@ -171,50 +171,69 @@ Our platform implements a **multi-agent system** where specialized AI models col
        │
        ▼
 ┌──────────────────────────────────────────────────────┐
-│  1. Conversation Analyzer                            │
-│     - Analyzes question context                      │
-│     - Detects learning patterns                      │
-│     - Identifies confusion signals                   │
-└──────┬────────────────────────────────────┬──────────┘
-       │                                    │
-       ▼                                    ▼
-┌─────────────────────┐          ┌──────────────────────┐
-│  2. Learning Path   │          │  3. System Prompt    │
-│     Generator       │          │     Generator        │
-│  - Adjusts path     │          │  - Updates prompts   │
-│  - Recommends next  │          │  - Optimizes style   │
-└─────────┬───────────┘          └──────────┬───────────┘
-          │                                 │
-          └─────────────┬───────────────────┘
-                        ▼
-              ┌──────────────────┐
-              │  4. Teacher Model│
-              │  - Generates     │
-              │    response      │
-              └─────────┬────────┘
-                        │
-          ┌─────────────┴─────────────┐
-          ▼                           ▼
-┌──────────────────┐        ┌──────────────────────┐
-│  5. Response     │        │  7. Video Generator  │
-│     Evaluator    │        │  8. Flashcard Gen    │
-│  - Scores        │        │  - Creates multimodal│
-│  - Gives feedback│        │    content           │
-└────────┬─────────┘        └──────────────────────┘
-         │
-         ▼
-┌──────────────────────┐
-│  6. Synthetic        │
-│     Evaluator        │
-│  - Tests with        │
-│    simulated students│
-│  - Finds edge cases  │
-└──────────────────────┘
-         │
-         ▼
-    (Feedback Loop)
-    Updates prompts,
-    paths, and strategies
+│  1. Learning Path Generator (Model 1)                │
+│     - Analyzes user progress & history               │
+│     - Determines next topic/difficulty               │
+│     - Sets learning objectives                       │
+└──────┬───────────────────────────────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────────────────────┐
+│  2. Conversation Analyzer (Model 3)                  │
+│     - Analyzes student question context              │
+│     - Detects learning patterns & confusion          │
+│     - Identifies learning style preferences          │
+└──────┬───────────────────────────────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────────────────────┐
+│  3. System Prompt Generator (Model 2)                │
+│     - Creates optimized prompts for content gen      │
+│     - Adapts style based on learning preferences     │
+│     - Incorporates conversation insights             │
+└──────┬───────────────────────────────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────────────────────┐
+│  4. Content Generation (Models 4, 7, 8)              │
+│     ┌────────────────────────────────────────┐       │
+│     │ Teacher Model (Model 4) - Text Content │       │
+│     │   OR                                   │       │
+│     │ Video Generator (Model 7) - Visual     │       │
+│     │   OR                                   │       │
+│     │ Flashcard Generator (Model 8) - Cards  │       │
+│     └────────────────────────────────────────┘       │
+│     (Selected based on learning style)               │
+└──────┬───────────────────────────────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────────────────────┐
+│  5. Response Evaluator (Model 5)                     │
+│     - Scores content quality (0-100)                 │
+│     - Evaluates: Accuracy, Clarity, Relevance        │
+│     - Provides improvement feedback                  │
+└──────┬───────────────────────────────────────────────┘
+       │
+       ▼
+   ┌───────────────┐
+   │ Score >= 70?  │
+   └───┬───────┬───┘
+       │ NO    │ YES
+       │       │
+       ▼       ▼
+   ┌───────┐  ┌──────────────────────┐
+   │ RETRY │  │ Deliver to Student   │
+   │ Loop  │  │ - Present content    │
+   │ Back  │  │ - Collect feedback   │
+   │ to #3 │  │ - Update preferences │
+   └───────┘  └──────────┬───────────┘
+                         │
+                         ▼
+                    (Continue or
+                     Next Lesson)
+
+Note: Model 6 (Synthetic Evaluator) runs separately for 
+system testing and is not part of the core interaction flow.
 ```
 
 ---
@@ -231,7 +250,7 @@ Our platform implements a **multi-agent system** where specialized AI models col
   - Spaced repetition flashcards for retention
 - **Adaptive Quizzes**: Questions adjust difficulty based on performance
 - **Progress Tracking**: Visual dashboard showing completion and mastery levels
-- **Learning Style Detection**: System adapts to visual, auditory, or reading/writing preferences
+- **Learning Style Detection**: System adapts to visual, or reading/writing preferences
 
 ### 👨‍🏫 For Educators
 
@@ -262,39 +281,39 @@ Our system implements a **continuous feedback loop** where agents learn from eac
 │                     ITERATION CYCLE                             │
 │                                                                 │
 │  1. GENERATION PHASE                                            │
-│     ├─ Learning Path Generator creates personalized path       │
-│     ├─ System Prompt Generator creates optimized prompts       │
-│     └─ Teacher Model generates lesson content                  │
+│     ├─ Learning Path Generator creates personalized path        │
+│     ├─ Conversation Analyzer analyzes student context           │
+│     ├─ System Prompt Generator creates optimized prompts        │
+│     └─ Content generators create lesson materials               │
 │                         │                                       │
 │                         ▼                                       │
 │  2. DELIVERY PHASE                                              │
-│     ├─ Student receives multimodal content                     │
-│     ├─ Conversation Analyzer monitors interactions             │
-│     └─ Video/Flashcard generators create supporting content    │
+│     ├─ Student receives multimodal content                      │
+│     ├─ Conversation Analyzer monitors interactions              │
+│     └─ Video/Flashcard generators create supporting content     │
 │                         │                                       │
 │                         ▼                                       │
 │  3. EVALUATION PHASE                                            │
-│     ├─ Response Evaluator scores content quality (0-100)       │
-│     ├─ Conversation Analyzer detects confusion patterns        │
-│     └─ Student performance metrics collected                   │
+│     ├─ Response Evaluator scores content quality (0-100)        │
+│     ├─ If score < 70: Loop back to regenerate content           │
+│     ├─ Conversation Analyzer detects confusion patterns         │
+│     └─ Student performance metrics collected                    │
 │                         │                                       │
 │                         ▼                                       │
-│  4. SYNTHETIC TESTING PHASE                                     │
-│     ├─ Synthetic Evaluator creates diverse personas            │
-│     ├─ Simulated students test system with edge cases          │
-│     └─ Weaknesses and failure patterns identified              │
+│  4. ADAPTATION PHASE                                            │
+│     ├─ System Prompt Generator updates prompts based on scores  │
+│     ├─ Learning Path Generator adjusts difficulty curves        │
+│     ├─ Content generators incorporate successful patterns       │
+│     └─ Low-scoring content flagged for regeneration             │
 │                         │                                       │
 │                         ▼                                       │
-│  5. ADAPTATION PHASE                                            │
-│     ├─ System Prompt Generator updates prompts based on scores │
-│     ├─ Learning Path Generator adjusts difficulty curves       │
-│     ├─ Teacher Model incorporates successful patterns          │
-│     └─ Low-scoring content flagged for regeneration            │
-│                         │                                       │
-│                         ▼                                       │
-│  6. ITERATION (Return to Generation with improvements)         │
+│  5. ITERATION (Return to Generation with improvements)          │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
+
+Note: Model 6 (Synthetic Evaluator) performs offline testing with 
+simulated personas to identify edge cases, but is not part of the 
+core real-time learning cycle.
 ```
 
 ### Specific Improvement Mechanisms
@@ -317,13 +336,7 @@ Our system implements a **continuous feedback loop** where agents learn from eac
 - **Adaptation**: Learning Path Generator adjusts sequence and difficulty
 - **Result**: Personalized pacing that maintains engagement
 
-#### 4. **Persona-Based Testing**
-- **Initial State**: System tested with real students only
-- **Evaluation**: Synthetic Evaluator creates 20+ diverse personas (different ages, backgrounds, learning styles)
-- **Adaptation**: System identifies blind spots and edge cases
-- **Result**: Robust performance across diverse learner profiles
-
-#### 5. **Multimodal Adaptation**
+#### 4. **Multimodal Adaptation**
 - **Initial State**: Text-only responses
 - **Evaluation**: Conversation Analyzer detects learning style from question patterns
 - **Adaptation**: System generates videos for visual learners, flashcards for memorization needs
@@ -824,7 +837,7 @@ HackathonKavakOpenIA/
 
 ## 🎯 Usage Example
 
-### Creating an Adaptive Learning Session
+### Creating an Adaptive Learning Session with Real-Time Adjustment
 
 1. **Student logs in and creates a topic:**
    ```
@@ -838,58 +851,185 @@ HackathonKavakOpenIA/
    Estimated Time: 3.5 hours
    ```
 
-3. **First Lesson Generated (Model 4 - Teacher):**
-   ```
-   Lesson: "Understanding Variables"
-   Difficulty: Beginner
-   Format: Text + Examples
-   ```
-
-4. **Student Asks Question:**
+3. **Student Asks First Question:**
    ```
    Student: "I don't understand the difference between let and var"
    ```
 
-5. **Conversation Analyzer (Model 3) Analyzes:**
+4. **Conversation Analyzer (Model 3) Analyzes:**
    ```
-   Detected: Confusion about scope
-   Learning Style: Prefers examples over theory
-   Recommendation: Generate visual explanation + code examples
-   ```
-
-6. **Teacher Responds with Adaptive Content:**
-   ```
-   Text Explanation: "let and var both declare variables, but..."
-   Code Examples: [3 interactive examples]
-   Video Generated (Model 7): "Visualizing Variable Scope" (45 sec)
+   Detected: First interaction, no clear pattern yet
+   Learning Style: Unknown (default to text)
+   Complexity Preference: Not determined
    ```
 
-7. **Response Evaluator (Model 5) Scores Response:**
+5. **System Prompt Generator (Model 2) Creates Initial Prompt:**
    ```
-   Overall Score: 88/100
-   - Accuracy: 30/30 ✓
-   - Clarity: 24/25 ✓
-   - Relevance: 18/20 ✓
-   - Pedagogy: 12/15
-   - Alignment: 4/10 (needs improvement)
+   Prompt: "Provide a technical explanation with code examples"
+   Style: Standard educational tone
    ```
 
-8. **Synthetic Evaluator (Model 6) Tests with Personas:**
+6. **Teacher Model (Model 4) Generates First Response:**
    ```
-   Testing with: Visual Learner Persona
-   Result: 92/100 (video helped significantly)
+   Response: "In JavaScript, let and var are both variable declarations. 
+   The key difference lies in their scoping mechanisms. var has function 
+   scope while let has block scope. Consider the temporal dead zone and 
+   hoisting behavior differences..."
    
-   Testing with: Non-Native Speaker Persona
-   Result: 74/100 (some jargon confusing)
-   
-   Action: System Prompt Generator updates prompts to simplify language
+   [Technical code examples follow]
    ```
 
-9. **System Adapts for Next Student:**
+7. **Response Evaluator (Model 5) Scores Initial Response:**
    ```
-   Updated Prompt: "Explain concepts using simple language and more visuals"
-   Next Response Score: 91/100 (improved by 3 points)
+   ❌ Overall Score: 65/100 (BELOW THRESHOLD)
+   - Accuracy: 28/30 ✓
+   - Clarity: 12/25 ✗ (too technical)
+   - Relevance: 14/20
+   - Pedagogy: 8/15 ✗ (lacks engagement)
+   - Alignment: 3/10 ✗ (doesn't match beginner level)
+   
+   Feedback: "Explanation uses advanced terminology without introduction.
+   Lacks visual aids. Not accessible for beginners."
    ```
+
+8. **System Triggers Retry Loop (Score < 70):**
+   ```
+   🔄 REGENERATION INITIATED
+   Action: Return to System Prompt Generator (Step 3)
+   ```
+
+9. **Student Provides Feedback:**
+   ```
+   Student: "That was too confusing. Can you explain it simpler? 
+   I'm a visual learner and I prefer seeing examples first."
+   ```
+
+10. **Conversation Analyzer (Model 3) Re-Analyzes with Feedback:**
+    ```
+    Detected: Confusion detected, beginner struggling
+    Learning Style: VISUAL LEARNER (explicitly stated)
+    Complexity Preference: SIMPLE explanations
+    Recommended Format: VIDEO + visual demonstrations
+    User Preferences Updated: visual=true, complexity=beginner, format=video
+    
+    🎬 ACTION: Switch to Video Generator (Model 7)
+    Reason: Visual learner detected - video will be more effective
+    ```
+
+11. **System Prompt Generator (Model 2) Adjusts Prompt for Video:**
+    ```
+    Updated Prompt: "Create a visual demonstration for absolute beginners.
+    Show concrete animated examples. Use real-world analogies with 
+    visual metaphors. No jargon. Focus on step-by-step visual explanation."
+    
+    Changes Based On:
+    - Evaluation feedback (score 65/100 - text too complex)
+    - Student explicit preference (visual learner)
+    - Detected confusion pattern
+    - Content type switch: Text → Video
+    ```
+
+12. **Video Generator (Model 7) Creates Visual Content:**
+    ```
+    🎥 Generating Video: "let vs var - Simple Visual Guide"
+    
+    Video Script:
+    "Watch how let and var work differently using animated boxes! 📦
+    
+    [Animation shows two colored boxes appearing]
+    
+    Scene 1: The var Box (Yellow)
+    - Box floats freely around the entire room
+    - Can be accessed from anywhere
+    - [Shows code: var banana = '🍌']
+    
+    Scene 2: The let Box (Blue)  
+    - Box stays locked in its specific corner
+    - Only exists in that area
+    - [Shows code: let apple = '🍎']
+    
+    Scene 3: Side-by-side comparison
+    - When we try to access them outside...
+    - var box: ✓ Still works!
+    - let box: ✗ Error! Box is gone!
+    
+    [Visual diagram highlights the difference with color coding]"
+    
+    Duration: 45 seconds
+    Narration: Beginner-friendly, conversational tone
+    Generating with OpenAI Sora 2...
+    ```
+
+13. **Response Evaluator (Model 5) Scores Video Content:**
+    ```
+    ✅ Overall Score: 92/100 (PASSES THRESHOLD)
+    - Accuracy: 30/30 ✓
+    - Clarity: 25/25 ✓ (visual demonstration perfect for concept)
+    - Relevance: 20/20 ✓ (directly shows difference visually)
+    - Pedagogy: 14/15 ✓ (highly engaging, memorable)
+    - Alignment: 3/10 ✓ (perfect for beginner visual learner)
+    
+    Improvement: +27 points (65 → 92)
+    Feedback: "Excellent adaptation! Video format ideal for visual 
+    learner. Animation makes abstract concept concrete and memorable."
+    ```
+
+14. **Content Delivered to Student:**
+    ```
+    System: ✓ Video generated and delivered
+    Format: MP4, 45 seconds
+    URL: /videos/let_vs_var_visual_guide.mp4
+    
+    Additional: Generated transcript + code snippets available
+    Student can replay video or request text summary
+    ```
+
+15. **Student Responds Positively:**
+    ```
+    Student: "Wow! That video made it so clear! I understand now. 
+    Can you explain const with another video?"
+    
+    Conversation Analyzer: Engagement dramatically improved ✓
+    Video effectiveness: Confirmed for this user
+    User Preferences: Reinforced video preference
+    ```
+
+16. **System Learns for Future Interactions:**
+    ```
+    Saved Preferences for User:
+    - Learning Style: Visual (strongly confirmed)
+    - Complexity: Beginner/Simple
+    - Preferred Format: VIDEO (primary), text (backup)
+    - Prefers: Animated demonstrations, visual metaphors
+    - Avoid: Text-heavy explanations, technical jargon
+    
+    Content Strategy Updated: 
+    ✓ Default to video generation for this user
+    ✓ Use animated demonstrations
+    ✓ Keep explanations under 60 seconds
+    ✓ Include visual metaphors and color coding
+    
+    Learning Path Adjusted: 
+    - Next 5 lessons will auto-generate videos
+    - Added video-based assessment options
+    - Reduced text-heavy content
+    
+    Next lesson will automatically:
+    ✓ Generate video first (not text)
+    ✓ Use Model 7 (Video Generator) as primary
+    ✓ Simple animations with narration
+    ✓ Provide code snippets as supplementary material
+    ```
+
+### Key Takeaway
+
+This example demonstrates the core self-improvement cycle:
+1. **Initial Response Failed** (65/100) - Text explanation too technical for beginner
+2. **Student Feedback Collected** - Explicit visual learning preference expressed
+3. **System Adapted Content Type** - Switched from Text (Model 4) to Video (Model 7)
+4. **Improved Response Passed** (92/100) - +27 point improvement with video format
+5. **Preferences Saved** - Future lessons automatically use video as primary format
+6. **Multimodal Intelligence** - System learned which content type works best for this user
 
 ---
 
@@ -909,7 +1049,7 @@ Developed for **Kavak Open AI Hackathon 2025**
 
 ## 🙏 Acknowledgments
 
-- **OpenAI** for GPT-4o, GPT-5, and Sora 2 API access
+- **OpenAI** for GPT-5, and Sora 2 API access
 - **LangChain** for the agent orchestration framework
 - **PostgreSQL** for robust data persistence
 
