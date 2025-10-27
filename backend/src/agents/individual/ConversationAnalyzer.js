@@ -180,6 +180,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
 
     try {
       const response = await this.llm.invoke(analysisPrompt);
+      console.log(response)
       const content = typeof response.content === 'string' ? response.content : JSON.stringify(response.content);
       const analysis = this.extractJSON(content);
 

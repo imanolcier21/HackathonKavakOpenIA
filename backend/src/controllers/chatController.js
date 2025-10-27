@@ -337,12 +337,22 @@ Please address these issues and provide a better explanation.`,
       };
     }
 
+    // Wrap multimodal responses in proper format for frontend
+    let messageToSave = explanation;
+    if (responseType === 'video' || responseType === 'flashcards') {
+      messageToSave = JSON.stringify({ 
+        type: responseType, 
+        data: explanation 
+      });
+      console.log(`📦 [Initial] Wrapped ${responseType} response for frontend`);
+    }
+
     // Save the initial explanation to database
     await pool.query(
       `INSERT INTO chat_messages 
        (user_id, lesson_id, message, is_user)
        VALUES ($1, $2, $3, $4)`,
-      [userId, lessonId, explanation, false]
+      [userId, lessonId, messageToSave, false]
     );
 
     // Save evaluation

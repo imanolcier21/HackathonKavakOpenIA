@@ -10,13 +10,10 @@ export class FlashcardGenerator extends BaseAgent {
   constructor() {
     super({
       name: 'FlashcardGenerator',
-      model: 'gpt-5', // Using GPT-5 for deeper reasoning in flashcard creation
-      reasoning: {
-        "effort": "minimum"
-      },
-      temperature: 1, // o1 models don't support temperature
+      model: 'gpt-4o', // Using GPT-4o for better JSON structured output
+      temperature: 0.7, // Some creativity but still structured
       maxTokens: 4000,
-      systemPrompt: 'You are an educational flashcard creator specializing in knowledge retention and spaced repetition.',
+      systemPrompt: `You are an expert educational flashcard creator. You MUST respond with ONLY valid JSON, no other text.`,
     });
   }
 
@@ -76,56 +73,48 @@ export class FlashcardGenerator extends BaseAgent {
       .map(msg => `${msg.is_user ? 'Student' : 'Teacher'}: ${msg.message}`)
       .join('\n');
 
-    const flashcardPrompt = `${systemPromptContent}
-
-You are creating EDUCATIONAL FLASHCARDS for spaced repetition learning.
-
-${isInitialExplanation ? `⚠️ CRITICAL: This is the student's FIRST lesson explanation. Create a COMPREHENSIVE flashcard set (8-12 cards) covering ALL major concepts of "${lessonContext.title}".
-
-The system prompt above contains the student's preferences - FOLLOW THEM STRICTLY when creating flashcards.` : 'Follow the student preferences in the system prompt above.'}
+    const flashcardPrompt = `Create ${isInitialExplanation ? '8-12' : '5-8'} educational flashcards for spaced repetition learning.
 
 LESSON CONTEXT:
-- Topic: ${lessonContext.topic || 'General'}
-- Lesson: ${lessonContext.title || 'Introduction'}
-- Description: ${lessonContext.description || 'Not provided'}
+Topic: ${lessonContext.topic || 'General'}
+Lesson: ${lessonContext.title || 'Introduction'}
+Description: ${lessonContext.description || 'Not provided'}
 
-CONVERSATION HISTORY:
-${historyContext || 'This is the start of the conversation'}
+${historyContext ? `CONVERSATION HISTORY:\n${historyContext}\n` : ''}
 
 STUDENT QUESTION: ${userMessage}
 
-Create ${isInitialExplanation ? '8-12' : '5-8'} flashcards covering the key concepts. Each flashcard should:
+${systemPromptContent ? `STUDENT PREFERENCES:\n${systemPromptContent}\n` : ''}
 
-1. Have a clear, specific FRONT (question/prompt)
-2. Have a complete, educational BACK (answer/explanation)
-3. Include difficulty level (easy/medium/hard)
-4. Add relevant tags for categorization
-5. Optionally include hints or mnemonics
-6. Match the complexity level specified in the student preferences
+REQUIREMENTS:
+- Create ${isInitialExplanation ? '8-12 comprehensive cards covering ALL major concepts' : '5-8 focused cards answering the question'}
+- Each card should test ONE specific concept
+- Use clear questions and complete answers
+- Include difficulty level (easy/medium/hard)
+- Add relevant tags for categorization
+- Optionally add hints, mnemonics, or examples
 
-Return a JSON object with this structure:
+CRITICAL: Respond with ONLY the JSON object below. No markdown, no code blocks, no explanations - JUST the raw JSON.
+
 {
-  "topic": "Topic name",
-  "subtopic": "Specific subtopic",
-  "totalCards": number,
+  "topic": "${lessonContext.title || 'Topic'}",
+  "subtopic": "Specific aspect covered",
+  "totalCards": ${isInitialExplanation ? '10' : '6'},
   "flashcards": [
     {
       "id": 1,
       "front": "Question or prompt",
-      "back": "Answer with explanation",
-      "difficulty": "easy|medium|hard",
+      "back": "Complete answer with explanation",
+      "difficulty": "easy",
       "tags": ["tag1", "tag2"],
-      "hint": "Optional hint to help recall",
-      "mnemonic": "Optional memory aid",
-      "example": "Optional practical example"
+      "hint": "Optional hint",
+      "mnemonic": null,
+      "example": "Optional example"
     }
   ],
-  "studyTips": ["tip 1", "tip 2"],
-  "reviewSchedule": "Suggested review intervals"
-}
-
-Make flashcards concise, clear, and focused on ONE concept per card.
-Use active recall techniques and varied question formats (definition, application, comparison, etc.)`;
+  "studyTips": ["Tip 1", "Tip 2", "Tip 3"],
+  "reviewSchedule": "Review after: 1 day, 3 days, 7 days, 14 days, 30 days"
+}`;
 
     try {
       const response = await this.llm.invoke(flashcardPrompt);
@@ -133,13 +122,21 @@ Use active recall techniques and varied question formats (definition, applicatio
         ? response.content 
         : JSON.stringify(response.content);
 
+      console.log('🃏 [FlashcardGenerator] Raw LLM Response:');
+      console.log(content.substring(0, 500));
+      console.log('...');
+
       // Try to extract JSON
       let flashcardSet;
       try {
         flashcardSet = this.extractJSON(content);
+        console.log('✅ [FlashcardGenerator] Successfully parsed JSON with', flashcardSet.flashcards?.length || 0, 'cards');
       } catch (jsonError) {
         // If JSON extraction fails, create a simple flashcard from the content
-        console.warn('Failed to parse flashcards as JSON, creating fallback');
+        console.error('❌ [FlashcardGenerator] Failed to parse flashcards as JSON');
+        console.error('Error:', jsonError.message);
+        console.error('Full response:', content);
+        
         flashcardSet = {
           topic: lessonContext.title || 'General Topic',
           subtopic: userMessage.substring(0, 50),
@@ -188,21 +185,51 @@ Use active recall techniques and varied question formats (definition, applicatio
    * @private
    */
   extractJSON(text) {
+    // First, try direct JSON parse
     try {
       return JSON.parse(text);
-    } catch {
-      const jsonMatch = text.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[1]);
-      }
-      
-      const objectMatch = text.match(/\{[\s\S]*\}/);
-      if (objectMatch) {
-        return JSON.parse(objectMatch[0]);
-      }
-      
-      throw new Error('No valid JSON found in response');
+    } catch (e) {
+      // Continue to other methods
     }
+
+    // Try to extract from markdown code blocks
+    const codeBlockRegex = /```(?:json)?\s*(\{[\s\S]*?\})\s*```/;
+    const codeBlockMatch = text.match(codeBlockRegex);
+    if (codeBlockMatch) {
+      try {
+        return JSON.parse(codeBlockMatch[1]);
+      } catch (e) {
+        console.warn('Failed to parse JSON from code block:', e.message);
+      }
+    }
+
+    // Try to find JSON object anywhere in the text
+    const jsonObjectRegex = /\{[\s\S]*"flashcards"[\s\S]*\}/;
+    const objectMatch = text.match(jsonObjectRegex);
+    if (objectMatch) {
+      try {
+        // Clean up common issues
+        let jsonStr = objectMatch[0];
+        // Remove trailing commas before closing braces/brackets
+        jsonStr = jsonStr.replace(/,(\s*[}\]])/g, '$1');
+        return JSON.parse(jsonStr);
+      } catch (e) {
+        console.warn('Failed to parse cleaned JSON object:', e.message);
+      }
+    }
+
+    // Last resort: try to find any JSON object
+    const anyObjectRegex = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/;
+    const anyMatch = text.match(anyObjectRegex);
+    if (anyMatch) {
+      try {
+        return JSON.parse(anyMatch[0]);
+      } catch (e) {
+        console.warn('Failed to parse any JSON object:', e.message);
+      }
+    }
+    
+    throw new Error('No valid JSON found in response');
   }
 }
 
